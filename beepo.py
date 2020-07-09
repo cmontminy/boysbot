@@ -30,8 +30,11 @@ async def on_ready():
 # member join
 @bot.event
 async def on_member_join(member):
-    curr_invite_list = await guild.invites() 
+    curr_invite_list = await guild.invites() # fetch current invite uses
+    for invite in curr_invite_list:
+        curr_invite_list[str(invite.id)] = invite.uses
 
+    
 
 
 # gets current invites
