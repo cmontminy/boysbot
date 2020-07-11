@@ -6,6 +6,7 @@ import sys
 import io
 import traceback
 
+
 description = "beepo for the boys"
 bot = commands.Bot(command_prefix='beenis ', description=description, 
         case_insensitive=True)
@@ -14,36 +15,50 @@ token = 0
 quote_list = []
 cached_invite_list = {}
 
+
 f = open("secrets.txt", "r") # fetch token from secrets file
 lines = f.readlines()
 for line in lines:
     if "TOKEN" in line:
         line_list = line.split("=")
         token = line_list[1]
-            
+
+
 # start up
 @bot.event
 async def on_ready():
     print("Logged in as {}".format(bot.user.name))
     await compile_quotes()
+    print("try to cache invites")
+    await cache_invites()
+
 
 # member join
 @bot.event
 async def on_member_join(member):
-    curr_invite_list = await guild.invites() # fetch current invite uses
-    for invite in curr_invite_list:
+    invite_id_list = await member.guild.invites() # fetch current invite uses
+    curr_invite_list = {}
+    for invite in invite_id_list:
         curr_invite_list[str(invite.id)] = invite.uses
+    message = f"{member.display_name} has joined!"
+    for invite in invite_id_list:
+        if curr_invite_list[str(invite.id)] != cached_invite_list[str(invite.id)]:
+            message += f" Invited from {invite.code} by {invite.inviter}"
+            break
 
-    
+    await cache_invites()
+    await bot.get_channel(670469511572488229).send(message)
 
 
 # gets current invites
 async def cache_invites():
-    cached_invite_list = await guild.invites() 
-    for invite in cached_invite_list:
+    print("in cache invites")
+    invite_id_list = await bot.get_guild(670469511572488223).invites() 
+    print(len(cached_invite_list))
+    for invite in invite_id_list:
         cached_invite_list[str(invite.id)] = invite.uses
+        print(f"added invite {invite.id}")
     
-
 
 # gets quotes command
 async def compile_quotes():
@@ -54,10 +69,12 @@ async def compile_quotes():
         if '\"' in message.content or message.attachments:
             quote_list.append(message)
 
+
 # test command
 @bot.command()
 async def test(ctx):
     await ctx.send("beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeepo")
+
 
 # help command
 @bot.command()
@@ -71,6 +88,7 @@ async def helpme(ctx):
     embed.add_field(name="python", value="Run some stinky pythonic shit", inline=False)
     await ctx.send(embed = embed)
 
+
 # quote command
 @bot.command()
 async def quote(ctx):
@@ -79,6 +97,7 @@ async def quote(ctx):
         return await ctx.send(message.content + "\n" + message.attachments[0].url)
     else:
         return await ctx.send(message.content)
+
 
 # advice command
 @bot.command()
@@ -94,6 +113,7 @@ async def advice(ctx):
             advice = message[start_quote + 1:end_quote]
     return await ctx.send(advice)
 
+
 # porn command
 @bot.command()
 async def porn(ctx):
@@ -106,6 +126,7 @@ async def porn(ctx):
             valid_message = True
             message_url = message.attachments[0].url
     return await ctx.send(message_url)
+
 
 # python command
 @bot.command()
@@ -131,5 +152,6 @@ async def py(ctx, *args):
         return await ctx.send(result)
     else:
         return await ctx.send("Done")
+
 
 bot.run(token)
