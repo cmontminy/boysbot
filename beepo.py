@@ -6,14 +6,19 @@ import sys
 import io
 import traceback
 
+from roles import Roles
+
 
 description = "beepo for the boys"
 bot = commands.Bot(command_prefix='beepo ', description=description, 
         case_insensitive=True)
+
 guild_id = 675196476086812683
 token = 0
 quote_list = []
-cached_invite_list = {}
+washed_hands = 0
+
+bot.add_cog(Roles(bot))
 
 
 f = open("secrets.txt", "r") # fetch token from secrets file
@@ -28,39 +33,16 @@ for line in lines:
 @bot.event
 async def on_ready():
     print("Logged in as {}".format(bot.user.name))
-    await compile_quotes()
-    print("try to cache invites")
-    await cache_invites()
 
-    game = discord.Game("skyler is stinky")
+    # set bot status
+    game = discord.Game("stinky is stinky")
     await bot.change_presence(activity = game)
 
+    # load quotes
+    await compile_quotes()
 
-# member join
-@bot.event
-async def on_member_join(member):
-    invite_id_list = await member.guild.invites() # fetch current invite uses
-    curr_invite_list = {}
-    for invite in invite_id_list:
-        curr_invite_list[str(invite.id)] = invite.uses
-    message = f"{member.display_name} has joined!"
-    for invite in invite_id_list:
-        if curr_invite_list[str(invite.id)] != cached_invite_list[str(invite.id)]:
-            message += f" Invited from {invite.code} by {invite.inviter}"
-            break
-
-    await cache_invites()
-    await bot.get_channel(670469511572488229).send(message)
-
-
-# gets current invites
-async def cache_invites():
-    print("in cache invites")
-    invite_id_list = await bot.get_guild(670469511572488223).invites() 
-    print(len(cached_invite_list))
-    for invite in invite_id_list:
-        cached_invite_list[str(invite.id)] = invite.uses
-        print(f"added invite {invite.id}")
+    # load roles
+    # cache_roles()
     
 
 # gets quotes command
@@ -156,17 +138,43 @@ async def py(ctx, *args):
     else:
         return await ctx.send("Done")
 
+
 # hug command
 @bot.command()
 async def hug(ctx, member_id):
+    global washed_hands
     member_id = member_id[3:-1]
     print(member_id)
     member = ctx.message.guild.get_member(int(member_id))
+    check_id = ctx.message.author.id
     print(member.nick)
+    print(washed_hands)
     if member:
-        await ctx.send(f"{ctx.message.author.mention} is omega cute and hugged {member.mention}!")
+        if (check_id == 145869054136156160) :
+            if (not washed_hands) :
+                await ctx.send(f"OH NOOOOOOOOOO {ctx.message.author.mention} HAS LATHERED {member.mention} WITH HIS CUM VAPORS!!!!")
+            else :
+                washed_hands = 0
+                await ctx.send(f"{ctx.message.author.mention} is omega cute and hugged {member.mention}!")
+        else :
+            if (member.id == 145869054136156160) and not (washed_hands) :
+                await ctx.send(f"{ctx.message.author.mention} is omega cute and hugged {member.mention}!")
+            else :
+                await ctx.send(f"{ctx.message.author.mention} is omega cute and hugged {member.mention}!")
     else:
         await ctx.send("I couldn't find that user D:")
+
+
+# washhands command
+@bot.command()
+async def washhands(ctx):
+    global washed_hands
+    member_id = ctx.message.author.id
+    if (member_id == 145869054136156160) :
+        washed_hands = 1
+        await ctx.send(f"the cum vapors have been washed off of {ctx.message.author.mention}... for now...")
+    else :
+        await ctx.send(f"{ctx.message.author.mention} has washed their hands! yay!")
 
 
 bot.run(token)

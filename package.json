@@ -1,0 +1,14 @@
+{
+    "name": "boysbot",
+    "description": "A Discord bot for the BOYS",
+    "version": "0.0.0",
+    "main": "beepo.py",
+    "scripts": {
+      "start": "python3 beepo.py"
+    },
+    "dependencies": {
+      "discord.py": "1.3.3",
+      "request": "2.81.0"
+    }
+  }
+  
