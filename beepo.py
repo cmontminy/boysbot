@@ -8,9 +8,9 @@ import traceback
 
 
 description = "beepo for the boys"
-bot = commands.Bot(command_prefix='beenis ', description=description, 
+bot = commands.Bot(command_prefix='beepo ', description=description, 
         case_insensitive=True)
-guild = bot.get_guild(675196476086812683)
+guild_id = 675196476086812683
 token = 0
 quote_list = []
 cached_invite_list = {}
@@ -31,6 +31,9 @@ async def on_ready():
     await compile_quotes()
     print("try to cache invites")
     await cache_invites()
+
+    game = discord.Game("skyler is stinky")
+    await bot.change_presence(activity = game)
 
 
 # member join
@@ -79,7 +82,7 @@ async def test(ctx):
 # help command
 @bot.command()
 async def helpme(ctx):
-    embed = discord.Embed(title="BEEEEEEEEEEEEEPO COMMANDS", description="Command prefix = beenis")
+    embed = discord.Embed(title="BEEEEEEEEEEEEEPO COMMANDS", description="Command prefix = beepo")
     embed.add_field(name="test", value="Sends beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeepo", inline=False)
     embed.add_field(name="helpme", value="Generates this message silly", inline=False)
     embed.add_field(name="quote", value="Generates a random quote from the #quotes channel", inline=False)
@@ -152,6 +155,18 @@ async def py(ctx, *args):
         return await ctx.send(result)
     else:
         return await ctx.send("Done")
+
+# hug command
+@bot.command()
+async def hug(ctx, member_id):
+    member_id = member_id[3:-1]
+    print(member_id)
+    member = ctx.message.guild.get_member(int(member_id))
+    print(member.nick)
+    if member:
+        await ctx.send(f"{ctx.message.author.mention} is omega cute and hugged {member.mention}!")
+    else:
+        await ctx.send("I couldn't find that user D:")
 
 
 bot.run(token)
