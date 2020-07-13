@@ -1,0 +1,8 @@
+ROLE FUNCTIONS
+- bot cares about whats in each message and sends them itself
+
+format:
+    title - top of the message, something that describes the roles (ie what consoles do you use?)
+    roles - emoji "  " [role name] (# users)
+
+- bot keeps track of users of each role and dynamically updates the message

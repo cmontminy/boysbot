@@ -14,12 +14,19 @@ description = "beepo for the boys"
 bot = commands.Bot(command_prefix='beepo ', description=description, 
         case_insensitive=True)
 
+token = 0
 guild_id = 675196476086812683
 quote_list = []
 washed_hands = 0
 
 bot.add_cog(Roles(bot))
 
+f = open("secrets.txt", "r") # fetch token from secrets file
+lines = f.readlines()
+for line in lines:
+    if "TOKEN" in line:
+        line_list = line.split("=")
+        token = line_list[1]
 
 # start up
 @bot.event
@@ -169,4 +176,5 @@ async def washhands(ctx):
         await ctx.send(f"{ctx.message.author.mention} has washed their hands! yay!")
 
 
-bot.run(os.environ.get('BOT_TOKEN'))
+# bot.run(os.environ.get('BOT_TOKEN'))
+bot.run(token)
