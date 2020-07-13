@@ -5,6 +5,7 @@ import pathlib
 import sys
 import io
 import traceback
+import os
 
 from roles import Roles
 
@@ -14,19 +15,10 @@ bot = commands.Bot(command_prefix='beepo ', description=description,
         case_insensitive=True)
 
 guild_id = 675196476086812683
-token = 0
 quote_list = []
 washed_hands = 0
 
 bot.add_cog(Roles(bot))
-
-
-f = open("secrets.txt", "r") # fetch token from secrets file
-lines = f.readlines()
-for line in lines:
-    if "TOKEN" in line:
-        line_list = line.split("=")
-        token = line_list[1]
 
 
 # start up
@@ -177,4 +169,4 @@ async def washhands(ctx):
         await ctx.send(f"{ctx.message.author.mention} has washed their hands! yay!")
 
 
-bot.run(token)
+bot.run(os.environ.get('BOT_TOKEN'))
