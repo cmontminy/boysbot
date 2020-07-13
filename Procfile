@@ -1,1 +1,1 @@
-worker: python3 wig.py
+worker: python3 beepo.py
