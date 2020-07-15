@@ -6,6 +6,7 @@ import sys
 import io
 import traceback
 import os
+import sqlite3
 
 from roles import Roles
 
@@ -19,14 +20,17 @@ guild_id = 675196476086812683
 quote_list = []
 washed_hands = 0
 
+connection = sqlite3.connect("beepo.db")
+cursor     = connection.cursor()
+
 bot.add_cog(Roles(bot))
 
-# f = open("secrets.txt", "r") # fetch token from secrets file
-# lines = f.readlines()
-# for line in lines:
-#     if "TOKEN" in line:
-#         line_list = line.split("=")
-#         token = line_list[1]
+f = open("secrets.txt", "r") # fetch token from secrets file
+lines = f.readlines()
+for line in lines:
+    if "TOKEN" in line:
+        line_list = line.split("=")
+        token = line_list[1]
 
 # start up
 @bot.event
@@ -39,6 +43,27 @@ async def on_ready():
 
     # load quotes
     await compile_quotes()
+
+    cursor.execute(''' SELECT count(name) FROM sqlite_master WHERE type='table' AND name='user_elems' ''')
+    if cursor.fetchone()[0] == 0:
+        # init database
+        cursor.execute(''' CREATE TABLE user_elems (
+            name      text,
+            user_id   text,
+            money     text,
+            stinky    text,
+            rps_wins  text,
+            rps_plays text
+        )''')
+        connection.commit()
+
+        member_list = bot.get_guild(guild_id).members
+        for member in member_list:
+            data_string = str((member.name,member.id,0,0,0,0))
+            print(data_string)
+            entry_string = f"INSERT INTO user_elems VALUES {data_string}"
+            cursor.execute(entry_string)
+        connection.commit()
 
     # load roles
     # cache_roles()
@@ -180,22 +205,71 @@ async def washhands(ctx):
 @bot.command()
 async def rps(ctx, user_guess = None):
     message = ""
-    options = ["rock", "paper", "scissors"]
+    options = ["scissors", "paper", "rock"]
+    outcome = False
+
     if user_guess is not None and user_guess in options:
-        bot_guess = options[random.randint(0, 2)]
-        if user_guess == bot_guess: # tie
+        user_num = options.index(user_guess)
+        bot_num  = random.randint(0, 2)
+        diff     = user_num - bot_num
+
+        if diff == 0: # tie
             message = f"You both guessed {user_guess}, so it's a tie!"
-        elif (user_guess == "rock"     and bot_guess == "paper")    or \
-             (user_guess == "paper"    and bot_guess == "scissors") or \
-             (user_guess == "scissors" and bot_guess == "rock"):
-             message = f"Beepo picked {bot_guess}, so you lose!"
+        elif diff == 1 or diff == -2:
+            message = f"Beepo picked {options[bot_num]}, so you win!"
+            outcome = True
         else:
-            message = f"Beepo picked {bot_guess}, so you win!"
+            message = f"Beepo picked {options[bot_num]}, so you lose!"
+            
     else:
         message = "This is rock paper scissors you dumb shit, pick one of those."
     
+    rps_log(ctx.author.id, outcome)
     await ctx.send(message)
 
 
-bot.run(os.environ.get('BOT_TOKEN'))
-# bot.run(token)
+# rps log
+def rps_log(user_id, outcome):
+    if outcome:
+        cursor.execute(f"SELECT rps_wins FROM user_elems WHERE user_id={user_id}")
+        curr_wins = int(cursor.fetchone()[0])
+        curr_wins += 1
+        cursor.execute(f"UPDATE user_elems SET rps_wins = {curr_wins} WHERE user_id = {user_id}")
+    else: # beepo won
+        cursor.execute(f"SELECT rps_wins FROM user_elems WHERE user_id={bot.user.id}")
+        curr_wins = int(cursor.fetchone()[0])
+        curr_wins += 1
+        cursor.execute(f"UPDATE user_elems SET rps_wins = {curr_wins} WHERE user_id = {bot.user.id}")
+    # update players total plays
+    cursor.execute(f"SELECT rps_plays FROM user_elems WHERE user_id={user_id}")
+    curr_plays = int(cursor.fetchone()[0])
+    curr_plays += 1
+    cursor.execute(f"UPDATE user_elems SET rps_plays = {curr_plays} WHERE user_id = {user_id}")
+
+    # update beepos total plays
+    cursor.execute(f"SELECT rps_plays FROM user_elems WHERE user_id={bot.user.id}")
+    curr_plays = int(cursor.fetchone()[0])
+    curr_plays += 1
+    cursor.execute(f"UPDATE user_elems SET rps_plays = {curr_plays} WHERE user_id = {bot.user.id}")
+    
+    connection.commit()
+
+
+    # with open("rps.txt", "r") as infile:
+    #     lines = infile.readlines()
+    
+    # with open("rps.txt", "w") as outfile:
+    #     for line in lines:
+    #         if user_id in line or "ALLTIME" in line:
+    #             line_list = line.split(",")
+    #             wins = line_list[1]
+    #             plays = line_list[2]
+    #             if outcome:
+    #                 wins += 1
+
+    #             line = f"{user_id},{wins},{plays + 1}" if user_id in line else f"ALLTIME,{wins},{plays + 1}" 
+                
+    #         outfile.writelines(line)
+
+# bot.run(os.environ.get('BOT_TOKEN'))
+bot.run(token)

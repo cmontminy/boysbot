@@ -1,3 +1,6 @@
+# Directories
+__pycache__/
+
+# Files
 secrets.txt
-.project
-.pydevproject
+
