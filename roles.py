@@ -9,12 +9,12 @@ class Roles(commands.Cog):
         self.bot = bot
 
 
-    # EMOIF=ROLE_ID
+    # MESSAGE_ID:EMOJI=ROLE_ID,EMOJI=ROLE_ID...
     def cache_roles():
         f = open("roles.txt", "r")
         lines = f.readlines()
         for line in lines:
-            line_list = line.split("=")
+            line_list = line.split(":")
             cached_roles.append(line_list)
 
 
@@ -27,7 +27,15 @@ class Roles(commands.Cog):
                          + " for role reactions!")
     
 
-    # role message function
+    # send role message function
+
+    # select role message function
+
+    # add role function
+
+    # remove role function
+
+    # assign / remove role on react
 
 
     # # hug command
