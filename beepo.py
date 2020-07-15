@@ -15,7 +15,7 @@ description = "beepo for the boys"
 bot = commands.Bot(command_prefix='beepo ', description=description, 
         case_insensitive=True)
 
-token = 0
+# token = 0
 guild_id = 675196476086812683
 quote_list = []
 washed_hands = 0
@@ -25,12 +25,12 @@ cursor     = connection.cursor()
 
 bot.add_cog(Roles(bot))
 
-f = open("secrets.txt", "r") # fetch token from secrets file
-lines = f.readlines()
-for line in lines:
-    if "TOKEN" in line:
-        line_list = line.split("=")
-        token = line_list[1]
+# f = open("secrets.txt", "r") # fetch token from secrets file
+# lines = f.readlines()
+# for line in lines:
+#     if "TOKEN" in line:
+#         line_list = line.split("=")
+#         token = line_list[1]
 
 # start up
 @bot.event
@@ -254,22 +254,5 @@ def rps_log(user_id, outcome):
     
     connection.commit()
 
-
-    # with open("rps.txt", "r") as infile:
-    #     lines = infile.readlines()
-    
-    # with open("rps.txt", "w") as outfile:
-    #     for line in lines:
-    #         if user_id in line or "ALLTIME" in line:
-    #             line_list = line.split(",")
-    #             wins = line_list[1]
-    #             plays = line_list[2]
-    #             if outcome:
-    #                 wins += 1
-
-    #             line = f"{user_id},{wins},{plays + 1}" if user_id in line else f"ALLTIME,{wins},{plays + 1}" 
-                
-    #         outfile.writelines(line)
-
-# bot.run(os.environ.get('BOT_TOKEN'))
-bot.run(token)
+bot.run(os.environ.get('BOT_TOKEN'))
+# bot.run(token)
