@@ -176,5 +176,26 @@ async def washhands(ctx):
         await ctx.send(f"{ctx.message.author.mention} has washed their hands! yay!")
 
 
+# rock papers scissors command
+@bot.command()
+async def rps(ctx, user_guess):
+    message = ""
+    options = ["rock", "paper", "scissors"]
+    if "rock" or "paper" or "scissors" in user_guess:
+        bot_guess = options[random.randint(0, 2)]
+        if user_guess == bot_guess: # tie
+            message = f"You both guessed {user_guess}, so it's a tie!"
+        elif (user_guess == "rock"     and bot_guess == "paper")    or \
+             (user_guess == "paper"    and bot_guess == "scissors") or \
+             (user_guess == "scissors" and bot_guess == "rock"):
+             message = f"Beepo picked {bot_guess}, so you lose!"
+        else:
+            message = f"Beepo picked {bot_guess}, so you win!"
+    else:
+        message = "This is rock paper scissors you dumb shit, pick one of those."
+    
+    await ctx.send(message)
+
+
 # bot.run(os.environ.get('BOT_TOKEN'))
 bot.run(token)
