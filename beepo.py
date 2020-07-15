@@ -21,12 +21,12 @@ washed_hands = 0
 
 bot.add_cog(Roles(bot))
 
-f = open("secrets.txt", "r") # fetch token from secrets file
-lines = f.readlines()
-for line in lines:
-    if "TOKEN" in line:
-        line_list = line.split("=")
-        token = line_list[1]
+# f = open("secrets.txt", "r") # fetch token from secrets file
+# lines = f.readlines()
+# for line in lines:
+#     if "TOKEN" in line:
+#         line_list = line.split("=")
+#         token = line_list[1]
 
 # start up
 @bot.event
@@ -197,5 +197,5 @@ async def rps(ctx, user_guess):
     await ctx.send(message)
 
 
-# bot.run(os.environ.get('BOT_TOKEN'))
-bot.run(token)
+bot.run(os.environ.get('BOT_TOKEN'))
+# bot.run(token)
