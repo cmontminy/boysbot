@@ -15,7 +15,6 @@ description = "beepo for the boys"
 bot = commands.Bot(command_prefix='beepo ', description=description, 
         case_insensitive=True)
 
-# token = 0
 guild_id = 675196476086812683
 quote_list = []
 washed_hands = 0
@@ -25,6 +24,7 @@ cursor     = connection.cursor()
 
 bot.add_cog(Roles(bot))
 
+# token = 0
 # f = open("secrets.txt", "r") # fetch token from secrets file
 # lines = f.readlines()
 # for line in lines:
@@ -209,23 +209,37 @@ async def rps(ctx, user_guess = None):
     outcome = False
 
     if user_guess is not None and user_guess in options:
-        user_num = options.index(user_guess)
-        bot_num  = random.randint(0, 2)
-        diff     = user_num - bot_num
-
-        if diff == 0: # tie
+        bot_guess  = options[random.randint(0, 2)]
+        if bot_guess == user_guess: # tie
             message = f"You both guessed {user_guess}, so it's a tie!"
-        elif diff == 1 or diff == -2:
-            message = f"Beepo picked {options[bot_num]}, so you win!"
-            outcome = True
+        elif bot_guess == "rock"     and user_guess == "scissors" or \
+             bot_guess == "paper"    and user_guess == "rock"     or \
+             bot_guess == "scissors" and user_guess == "paper":
+            message = f"Beepo picked {bot_guess}, so you lose!"
         else:
-            message = f"Beepo picked {options[bot_num]}, so you lose!"
+            message = f"Beepo picked {bot_guess}, so you win!"
+            outcome = True
             
     else:
         message = "This is rock paper scissors you dumb shit, pick one of those."
     
     rps_log(ctx.author.id, outcome)
     await ctx.send(message)
+
+@bot.command()
+async def leaderboard(ctx):
+    cursor.execute(f"SELECT user_id, rps_wins from user_elems")
+    wins = list(cursor.fetchall())
+    wins.sort(key=lambda x: x[1], reverse=True)
+
+    embed = discord.Embed(title="ROCK PAPER SCISSORS LEADERBOARD")
+    for user in wins:
+        user_id = int(user[0])
+        user_wins = int(user[1])
+        embed.add_field(name=f"{bot.get_user(user_id).name}", value=f"{user_wins}", inline=False)
+
+    await ctx.send(embed = embed)
+
 
 
 # rps log
@@ -240,6 +254,7 @@ def rps_log(user_id, outcome):
         curr_wins = int(cursor.fetchone()[0])
         curr_wins += 1
         cursor.execute(f"UPDATE user_elems SET rps_wins = {curr_wins} WHERE user_id = {bot.user.id}")
+    
     # update players total plays
     cursor.execute(f"SELECT rps_plays FROM user_elems WHERE user_id={user_id}")
     curr_plays = int(cursor.fetchone()[0])
