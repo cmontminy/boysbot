@@ -178,10 +178,10 @@ async def washhands(ctx):
 
 # rock papers scissors command
 @bot.command()
-async def rps(ctx, user_guess):
+async def rps(ctx, user_guess = None):
     message = ""
     options = ["rock", "paper", "scissors"]
-    if "rock" or "paper" or "scissors" in user_guess:
+    if user_guess is not None and user_guess in options:
         bot_guess = options[random.randint(0, 2)]
         if user_guess == bot_guess: # tie
             message = f"You both guessed {user_guess}, so it's a tie!"
