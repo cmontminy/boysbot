@@ -230,7 +230,7 @@ async def rps(ctx, user_guess = None):
 async def leaderboard(ctx):
     cursor.execute(f"SELECT user_id, rps_wins from user_elems")
     wins = list(cursor.fetchall())
-    wins.sort(key=lambda x: x[1], reverse=True)
+    wins = sorted(wins, key=lambda x: int(x[1]), reverse=True)
 
     embed = discord.Embed(title="ROCK PAPER SCISSORS LEADERBOARD")
     for user in wins:

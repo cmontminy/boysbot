@@ -3,4 +3,4 @@ __pycache__/
 
 # Files
 secrets.txt
-beepo.db
+*.db
