@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
+import sqlite3
 
-default_channel = 0
+default_channel_id = 0
 cache_roles = []
 
 class Roles(commands.Cog):
@@ -9,32 +10,43 @@ class Roles(commands.Cog):
         self.bot = bot
 
 
-    # MESSAGE_ID:EMOJI=ROLE_ID,EMOJI=ROLE_ID...
-    def cache_roles():
-        f = open("roles.txt", "r")
-        lines = f.readlines()
-        for line in lines:
-            line_list = line.split(":")
-            cached_roles.append(line_list)
+    # # MESSAGE_ID:EMOJI=ROLE_ID,EMOJI=ROLE_ID...
+    # def cache_roles():
+    #     f = open("roles.txt", "r")
+    #     lines = f.readlines()
+    #     for line in lines:
+    #         line_list = line.split(":")
+    #         cached_roles.append(line_list)
 
 
     # set channel command
     @commands.command()
     async def setchannel(self, ctx):
-        global default_channel
-        default_channel = ctx.message.channel
-        await ctx.send(f"#{default_channel} has been set as the default channel" 
-                         + " for role reactions!")
-    
+        global default_channel_id
+        default_channel_id = ctx.message.channel.id
+        await ctx.send(f"{self.bot.get_channel(default_channel_id).mention} has been set as the default channel" 
+                         + " for role reactions! [LOCAL]")
+
+
+    # get channel command
+    @commands.command()
+    async def getchannel(self, ctx):
+        global default_channel_id
+        await ctx.send(f"The default channel is {self.bot.get_channel(default_channel_id).mention}.")
+
 
     # send role message function
+    
 
     # select role message function
 
+
     # add role function
 
+    
     # remove role function
 
+    
     # assign / remove role on react
 
 
