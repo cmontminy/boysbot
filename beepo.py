@@ -24,13 +24,13 @@ cursor     = connection.cursor()
 
 bot.add_cog(Roles(bot))
 
-token = 0
-f = open("secrets.txt", "r") # fetch token from secrets file
-lines = f.readlines()
-for line in lines:
-    if "TOKEN" in line:
-        line_list = line.split("=")
-        token = line_list[1]
+# token = 0
+# f = open("secrets.txt", "r") # fetch token from secrets file
+# lines = f.readlines()
+# for line in lines:
+#     if "TOKEN" in line:
+#         line_list = line.split("=")
+#         token = line_list[1]
 
 # start up
 @bot.event
@@ -269,5 +269,5 @@ def rps_log(user_id, outcome):
     
     connection.commit()
 
-# bot.run(os.environ.get('BOT_TOKEN'))
-bot.run(token)
+bot.run(os.environ.get('BOT_TOKEN'))
+# bot.run(token)
