@@ -2,35 +2,45 @@ import discord
 from discord.ext import commands
 import random
 import pathlib
-import sys
+import sys # 
 import io
 import traceback
-import os
-import sqlite3
+import os      # environ.get
+import sqlite3 # connect, commit,
 
-from roles.roles import Roles
+from roles.roles import Roles # role cog
 
 
-description = "beepo for the boys"
-bot = commands.Bot(command_prefix='beepo ', description=description, 
-        case_insensitive=True)
+# ----- GLOBALS ----- #
 
 guild_id = 675196476086812683
 quote_list = []
 washed_hands = 0
 
+local = len(sys.argv) == 2 and sys.argv[1] == "-l"
+
+# ----- SQLLITE ----- #
 connection = sqlite3.connect("beepo.db")
 cursor     = connection.cursor()
 
-bot.add_cog(Roles(bot))
 
-# token = 0
-# f = open("secrets.txt", "r") # fetch token from secrets file
-# lines = f.readlines()
-# for line in lines:
-#     if "TOKEN" in line:
-#         line_list = line.split("=")
-#         token = line_list[1]
+# ----- BOT CREATION ----- #
+description = "beepo for the boys"
+bot = commands.Bot(command_prefix='beepo ', description=description, 
+        case_insensitive=True)
+
+
+# ----- COGS ----- #
+bot.add_cog(Roles(bot)) # role cog
+
+if local:
+    token = 0
+    f = open("secrets.txt", "r") # fetch token from secrets file
+    lines = f.readlines()
+    for line in lines:
+        if "TOKEN" in line:
+            line_list = line.split("=")
+            token = line_list[1]
 
 # start up
 @bot.event
@@ -269,5 +279,7 @@ def rps_log(user_id, outcome):
     
     connection.commit()
 
-bot.run(os.environ.get('BOT_TOKEN'))
-# bot.run(token)
+if local:
+    bot.run(token)
+else:
+    bot.run(os.environ.get('BOT_TOKEN'))
